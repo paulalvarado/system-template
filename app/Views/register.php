@@ -45,6 +45,7 @@
                 firstname: '',
                 lastname: '',
                 username: '',
+                email: '',
                 password: '',
                 password_confirmation: '',
             },

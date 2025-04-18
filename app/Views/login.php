@@ -19,9 +19,7 @@
                 <p class="text-sm">Ingresa tus credenciales para acceder a tu cuenta</p>
             </div>
             <div class="p-6 pt-0 space-y-4">
-                <div id="username_container"></div>
-                <div id="password_container"></div>
-                <div id="remember"></div>
+                <div id="form_login"></div>
                 <div id="submit"></div>
             </div>
             <div class="flex items-center p-6 pt-0">
@@ -34,64 +32,92 @@
 <?= $this->section('scripts') ?>
 <script>
     jQuery(document).ready(($) => {
-        $('#username_container').addClass('flex flex-col gap-y-2').append(
-            $('<div>').addClass('flex gap-x-1 items-center').append(
-                $('<i>').addClass('dx-icon dx-icon-user'),
-                $('<span>').addClass('text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70').attr('for', 'username').text('Nombre de usuario')
-            ),
-            $('<div>').attr('id', 'username').dxTextBox({
-                width: '100%',
-                placeholder: 'johndoe',
-                showClearButton: true,
-            })
-        );
-
-        $('#password_container').addClass('flex flex-col gap-y-2').append(
-            $('<div>').addClass('flex gap-x-1 items-center').append(
-                $('<i>').addClass('dx-icon dx-icon-lock'),
-                $('<span>').addClass('text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70').attr('for', 'password').text('Contraseña')
-            ),
-            $('<div>').attr('id', 'password').dxTextBox({
-                mode: 'password',
-                width: '100%',
-                placeholder: '••••••••',
-                showClearButton: true,
-                buttons: [{
-                        location: 'after',
-                        name: 'clear',
-                        widget: 'dxButton',
-                        options: {
-                            icon: 'dx-icon dx-icon-close',
-                            onClick: function(e) {
-                                e.component.option('value', '');
-                            }
+        $('#form_login').dxForm({
+            formData: {
+                username: '',
+                password: '',
+            },
+            items: [{
+                    dataField: 'username',
+                    editorOptions: {
+                        placeholder: 'johndoe',
+                        valueChangeEvent: 'keyup',
+                        showClearButton: true,
+                        elementAttr: {
+                            id: 'username',
+                        },
+                    },
+                    label: {
+                        template: (data) => {
+                            return $('<div>').addClass('flex gap-x-1 items-center').append(
+                                $('<i>').addClass('dx-icon-user text-sm'),
+                                $('<span>').addClass('text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70').attr('for', 'username').text('Nombre de usuario')
+                            );
                         }
                     },
-                    {
-                        location: 'after',
-                        name: 'password',
-                        widget: 'dxButton',
-                        options: {
-                            icon: 'eyeopen',
-                            type: 'text',
-                            onClick: function(e) {
-                                const field = $('#password').dxTextBox('instance');
-                                if (field.option('mode') === 'password') {
-                                    field.option('mode', 'text');
-                                    e.component.option('icon', 'eyeclose');
-                                } else {
-                                    field.option('mode', 'password');
-                                    e.component.option('icon', 'eyeopen');
+                    validationRules: [{
+                        type: 'required',
+                        message: 'El nombre de usuario es requerido'
+                    }]
+                },
+                {
+                    dataField: 'password',
+                    editorOptions: {
+                        placeholder: '••••••••',
+                        mode: 'password',
+                        valueChangeEvent: 'keyup',
+                        elementAttr: {
+                            id: 'password',
+                        },
+                        showClearButton: true,
+                        buttons: ['clear',
+                            {
+                                location: 'after',
+                                name: 'password',
+                                widget: 'dxButton',
+                                options: {
+                                    icon: 'eyeopen',
+                                    type: 'text',
+                                    onClick: function(e) {
+                                        const field = $('#password').dxTextBox('instance');
+                                        if (field.option('mode') === 'password') {
+                                            field.option('mode', 'text');
+                                            e.component.option('icon', 'eyeclose');
+                                        } else {
+                                            field.option('mode', 'password');
+                                            e.component.option('icon', 'eyeopen');
+                                        }
+                                    }
                                 }
-                            }
+                            },
+                        ]
+                    },
+                    label: {
+                        template: (data) => {
+                            return $('<div>').addClass('flex gap-x-1 items-center').append(
+                                $('<i>').addClass('dx-icon-lock text-sm'),
+                                $('<span>').addClass('text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70').attr('for', 'password').text('Contraseña')
+                            );
                         }
                     },
-                ]
-            })
-        );
-
-        $('#remember').dxCheckBox({
-            text: 'Recuerdame'
+                    validationRules: [{
+                        type: 'required',
+                        message: 'La contraseña es requerida'
+                    }]
+                },
+                {
+                    itemType: 'simple',
+                    editorType: 'dxCheckBox',
+                    dataField: 'remember_me',
+                    label: {
+                        visible: false
+                    },
+                    editorOptions: {
+                        text: 'Recuerdame',
+                        value: false,
+                    },
+                },
+            ]
         });
 
         $('#submit').dxButton({
