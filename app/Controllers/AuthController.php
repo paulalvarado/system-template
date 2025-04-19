@@ -22,7 +22,7 @@ class AuthController extends BaseController
         ];
 
         if (!$this->validate($rules)) {
-            return $this->response->setStatusCode(ResponseInterface::HTTP_BAD_REQUEST)->setJSON([
+            return $this->respond([
                 'status' => ResponseInterface::HTTP_BAD_REQUEST,
                 'errors' => $this->validator->getErrors(),
             ], ResponseInterface::HTTP_BAD_REQUEST);
@@ -32,7 +32,14 @@ class AuthController extends BaseController
         $password = $this->request->getVar('password');
         $remember_me = $this->request->getVar('remember_me');
 
-        $user = (new UsersModel())->verifyUser($username, $password);
+        try {
+            $user = (new UsersModel())->verifyUser($username, $password);
+        } catch (\Exception $e) {
+            return $this->respond([
+                'status' => ResponseInterface::HTTP_INTERNAL_SERVER_ERROR,
+                'message' => 'An error occurred while verifying the user'
+            ], ResponseInterface::HTTP_INTERNAL_SERVER_ERROR);
+        }
 
         if ($user) {
             if ($user['is_active'] == 0) {
@@ -54,12 +61,27 @@ class AuthController extends BaseController
 
             // Si remember_me está presente y es verdadero, extendemos la expiración
             if ($remember_me) {
-                $cookieValue = bin2hex(random_bytes(32)); // Generar token seguro
+                try {
+                    $cookieValue = bin2hex(random_bytes(32)); // Generar token seguro
+                } catch (\Exception $e) {
+                    return $this->respond([
+                        'status' => ResponseInterface::HTTP_INTERNAL_SERVER_ERROR,
+                        'message' => 'An error occurred while generating a secure token'
+                    ], ResponseInterface::HTTP_INTERNAL_SERVER_ERROR);
+                }
+
                 $cookieName = 'remember_me';
                 $expire = time() + (60 * 60 * 24 * 30); // 30 días
 
-                // Guardar el token
-                (new UserMetaModel())->saveRememberToken($user['id_user'], $cookieValue);
+                try {
+                    // Guardar el token
+                    (new UserMetaModel())->saveRememberToken($user['id_user'], $cookieValue);
+                } catch (\Exception $e) {
+                    return $this->respond([
+                        'status' => ResponseInterface::HTTP_INTERNAL_SERVER_ERROR,
+                        'message' => 'An error occurred while saving the remember token'
+                    ], ResponseInterface::HTTP_INTERNAL_SERVER_ERROR);
+                }
 
                 setcookie($cookieName, $cookieValue, $expire, '/', '', false, true); // httpOnly
             }
