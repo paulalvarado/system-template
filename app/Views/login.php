@@ -17,13 +17,6 @@
             <div class="flex flex-col p-6 space-y-1">
                 <h3 class="tracking-tight text-2xl font-bold">Iniciar Sesión</h3>
                 <p class="text-sm">Ingresa tus credenciales para acceder a tu cuenta</p>
-                <pre>
-
-                <?php
-
-                print_r($_COOKIE);
-                ?>
-                </pre>
             </div>
             <div class="p-6 pt-0 space-y-4">
                 <div id="form_login"></div>

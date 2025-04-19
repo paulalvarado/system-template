@@ -104,6 +104,12 @@ class AuthController extends BaseController
                 'last_login_at' => date('Y-m-d H:i:s')
             ]);
 
+            // Creamos una notificación de inicio de sesión con flashdata
+            session()->setFlashdata('notification', [
+                'type' => 'success',
+                'message' => 'You have successfully logged in'
+            ]);
+
             return $this->respond([
                 'status' => ResponseInterface::HTTP_OK,
                 'data' => $payload
@@ -174,10 +180,15 @@ class AuthController extends BaseController
         }
 
         if ($user) {
+            // Creamos una notificación de inicio de sesión con flashdata
+            session()->setFlashdata('notification', [
+                'type' => 'success',
+                'message' => 'You have successfully registered'
+            ]);
+            
             return $this->respond([
                 'status' => ResponseInterface::HTTP_CREATED,
-                'message' => 'User registered successfully',
-                'data' => $user
+                'message' => 'User registered successfully'
             ], ResponseInterface::HTTP_CREATED);
         } else {
             return $this->respond([

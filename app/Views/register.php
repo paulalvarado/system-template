@@ -33,13 +33,6 @@
 <script>
     jQuery(document).ready(($) => {
 
-        $('#submit').dxButton({
-            text: 'Registrarme',
-            width: '100%',
-            type: 'default',
-            useSubmitBehavior: true
-        });
-
         $('#form_register').dxForm({
             formData: {
                 firstname: '',
@@ -253,7 +246,43 @@
                     }]
                 },
             ],
-        })
+            onEditorEnterKey: function(e) {
+                formSubmit();
+            }
+        });
+
+        const formSubmit = () => {
+            const instance = $('#form_register').dxForm('instance');
+            const formData = instance.option('formData');
+            const validate = instance.validate();
+            if (!validate.isValid) {
+                for (let i = 0; i < validate.brokenRules.length; i++) {
+                    const error = validate.brokenRules[i];
+
+                    $.notify({
+                        message: error.message,
+                        type: 'warning'
+                    });
+                }
+                return;
+            }
+
+            query('register', 'POST', formData).done(function(response) {
+                window.location.href = '<?= base_url('login') ?>';
+            }).catch(function(error) {
+                $.notify({
+                    message: error.responseJSON.message,
+                    type: 'warning'
+                });
+            });
+        }
+
+        $('#submit').dxButton({
+            text: 'Registrarme',
+            width: '100%',
+            type: 'default',
+            onClick: () => formSubmit()
+        });
     })
 </script>
 <?= $this->endSection() ?>
