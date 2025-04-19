@@ -5,7 +5,7 @@ namespace App\Database\Migrations;
 use CodeIgniter\Database\Migration;
 use CodeIgniter\Database\RawSql;
 
-class Users extends Migration
+class UserMeta extends Migration
 {
     public function up()
     {

@@ -12,6 +12,17 @@ class AuthController extends BaseController
 {
     use ResponseTrait;
     
+    /**
+     * Autentica un usuario y devuelve su información en caso de éxito.
+     *
+     * Valida que los campos proporcionados no están vacíos, y que el
+     * username y la contraseña coinciden con un registro en la tabla
+     * users. Si todo está correcto, devuelve la información del usuario
+     * autenticado, o null si hubo un error.
+     *
+     * @return array|null La información del usuario autenticado, o null
+     *                    si hubo un error.
+     */
     public function login()
     {
         // Validamos los campos requeridos
@@ -42,7 +53,7 @@ class AuthController extends BaseController
         }
 
         if ($user) {
-            if ($user['is_active'] == 0) {
+            if ($user['status'] == 0) {
                 return $this->respond([
                     'status' => ResponseInterface::HTTP_UNAUTHORIZED,
                     'message' => 'The user is not active'
@@ -56,7 +67,7 @@ class AuthController extends BaseController
                 'username' => $user['username'],
                 'email' => $user['email'],
                 'role' => $user['role'],
-                'is_active' => $user['is_active'],
+                'status' => $user['status'],
             ];
 
             // Si remember_me está presente y es verdadero, extendemos la expiración
@@ -88,6 +99,11 @@ class AuthController extends BaseController
 
             session()->set('auth', $payload);
 
+            // Actualizamos la fecha de inicio de sesión
+            (new UsersModel())->update($user['id_user'], [
+                'last_login_at' => date('Y-m-d H:i:s')
+            ]);
+
             return $this->respond([
                 'status' => ResponseInterface::HTTP_OK,
                 'data' => $payload
@@ -97,6 +113,77 @@ class AuthController extends BaseController
                 'status' => ResponseInterface::HTTP_UNAUTHORIZED,
                 'message' => 'Invalid username or password'
             ], ResponseInterface::HTTP_UNAUTHORIZED);
+        }
+    }
+
+    /**
+     * Destruye la sesión actual y devuelve un mensaje de confirmación.
+     *
+     * @return ResponseInterface
+     */
+    public function logout()
+    {
+        session()->destroy();
+        return $this->respond([
+            'status' => ResponseInterface::HTTP_OK,
+            'message' => 'Logout successful'
+        ], ResponseInterface::HTTP_OK);
+    }
+
+    /**
+     * Registra un nuevo usuario en la base de datos.
+     *
+     * Valida que los campos proporcionados no están vacíos, y que el correo electrónico no está ya en uso.
+     * Si todo está correcto, crea un nuevo registro en la tabla users y devuelve la información del usuario.
+     * Si hay un error al registrar el usuario, devuelve null.
+     *
+     * @return array|null La información del usuario reción registrado, o null si hubo un error.
+     */
+    public function register()
+    {
+        // Validamos los campos requeridos
+        $rules = [
+            'firstname' => 'required|max_length[255]',
+            'lastname' => 'required|max_length[255]',
+            'username' => 'required|max_length[255]',
+            'email' => 'required|valid_email|max_length[255]',
+            'password' => 'required|max_length[255]',
+            'password_confirmation' => 'required|max_length[255]|matches[password]',
+        ];
+
+        if (!$this->validate($rules)) {
+            return $this->respond([
+                'status' => ResponseInterface::HTTP_BAD_REQUEST,
+                'errors' => $this->validator->getErrors(),
+            ], ResponseInterface::HTTP_BAD_REQUEST);
+        }
+
+        $firstname = $this->request->getVar('firstname');
+        $lastname = $this->request->getVar('lastname');
+        $username = $this->request->getVar('username');
+        $email = $this->request->getVar('email');
+        $password = $this->request->getVar('password');
+
+        try {
+            $user = (new UsersModel())->registerUser($firstname, $lastname, $username, $email, $password);
+        } catch (\Exception $e) {
+            return $this->respond([
+                'status' => ResponseInterface::HTTP_INTERNAL_SERVER_ERROR,
+                'message' => 'An error occurred while registering the user'
+            ], ResponseInterface::HTTP_INTERNAL_SERVER_ERROR);
+        }
+
+        if ($user) {
+            return $this->respond([
+                'status' => ResponseInterface::HTTP_CREATED,
+                'message' => 'User registered successfully',
+                'data' => $user
+            ], ResponseInterface::HTTP_CREATED);
+        } else {
+            return $this->respond([
+                'status' => ResponseInterface::HTTP_INTERNAL_SERVER_ERROR,
+                'message' => 'An error occurred while registering the user'
+            ], ResponseInterface::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 }

@@ -81,4 +81,47 @@ class UsersModel extends Model
             return null;
         }
     }
+
+    /**
+     * Registra un nuevo usuario en la base de datos.
+     *
+     * Valida que los campos proporcionados no est n vacíos, y que el correo electrónico no est  ya en uso.
+     * Si todo est  correcto, crea un nuevo registro en la tabla users y devuelve la informaci n del usuario.
+     * Si hay un error al registrar el usuario, devuelve null.
+     *
+     * @param string $firstName El nombre del usuario.
+     * @param string $lastName El apellido del usuario.
+     * @param string $username El nombre de usuario del usuario.
+     * @param string $email El correo electrónico del usuario.
+     * @param string $password La contrase a del usuario.
+     *
+     * @return array|null La informaci n del usuario reci n registrado, o null si hubo un error.
+     */
+    public function registerUser(string $firstName, string $lastName, string $username, string $email, string $password): ?array
+    {
+        if (empty($firstName) || empty($lastName) || empty($username) || empty($email) || empty($password)) {
+            return null;
+        }
+
+        $user = [
+            'firstname' => $firstName,
+            'lastname' => $lastName,
+            'username' => $username,
+            'email' => $email,
+            'password' => password_hash($password, PASSWORD_DEFAULT),
+        ];
+
+        try {
+            $this->insert($user);
+
+            return $user;
+        } catch (\Exception $e) {
+            log_message('error', sprintf(
+                'Error registering user: %s',
+                $e->getMessage()
+            ));
+
+            return null;
+        }
+    }
 }

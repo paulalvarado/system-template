@@ -36,6 +36,11 @@ class Users extends Migration
                 'type'       => 'datetime',
                 'default'    => null,
             ],
+            'role' => [
+                'type'       => 'ENUM',
+                'constraint' => ['admin', 'user'],
+                'default'    => 'user',
+            ],
             'status' => [
                 'type'       => 'ENUM',
                 'constraint' => ['active', 'inactive'],
