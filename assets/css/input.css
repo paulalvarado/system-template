@@ -4,3 +4,19 @@
     --color-clifford: #da373d;
     --color-primary: #18181b;
 }
+
+.dx-icon-loader {
+    width: 14px !important;
+    height: 14px !important;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    border: 3px solid gray;
+    border-right-color: #fdda24;
+    animation: l2 1s infinite linear;
+}
+
+@keyframes l2 {
+    to {
+        transform: rotate(1turn)
+    }
+}

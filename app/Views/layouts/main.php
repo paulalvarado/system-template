@@ -3,11 +3,12 @@
 
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= $title ?? 'Mi App' ?></title>
     <!-- Styles -->
-    <?= view('partials/styles') ?>
+    <?= view('layouts/styles') ?>
     <!-- Scripts -->
-    <?= view('partials/scripts') ?>
+    <?= view('layouts/scripts') ?>
 </head>
 
 <body>

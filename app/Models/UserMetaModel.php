@@ -61,11 +61,8 @@ class UserMetaModel extends Model
      * @param string $token El token a guardar
      * @return bool  Éxito
      */
-    public function saveRememberToken($userId, $token)
+    public function saveRememberToken(int $userId, string $token)
     {
-        if (!is_int($userId)) throw new \InvalidArgumentException('User ID should be an integer');
-        if (!is_string($token)) throw new \InvalidArgumentException('Token should be a string');
-
         $userMeta = $this->where('id_user', $userId)->first();
 
         if (is_null($userMeta)) {

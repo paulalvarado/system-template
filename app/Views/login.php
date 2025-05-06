@@ -2,18 +2,18 @@
 
 <?= $this->section('content') ?>
 <div class="grid gap-6 lg:grid-cols-2 lg:gap-12 max-w-6xl mx-auto">
-    <div class="flex flex-col justify-center space-y-4">
+    <div class="hidden lg:flex flex-col justify-center space-y-4">
         <div class="space-y-2">
             <h1 class="text-3xl font-bold tracking-tighter sm:text-5xl">Bienvenido de nuevo</h1>
-            <p class="text-gray-500 md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">Inicia sesión en tu cuenta para acceder a todas las funciones de nuestra plataforma.</p>
+            <p class="text-gray-500 md:text-xl lg:text-base xl:text-xl">Inicia sesión en tu cuenta para acceder a todas las funciones de nuestra plataforma.</p>
         </div>
         <div class="flex flex-col gap-2 min-[400px]:flex-row">
             <a href="#" class="inline-flex h-10 items-center justify-center rounded-md bg-gray-900 px-8 text-sm font-medium text-gray-50 shadow transition-colors hover:bg-gray-900/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gray-950">Saber más</a>
             <a href="#" class="inline-flex h-10 items-center justify-center rounded-md border border-gray-200 bg-white px-8 text-sm font-medium shadow-sm transition-colors hover:bg-gray-100 hover:text-gray-900 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gray-950">Registrarse</a>
         </div>
     </div>
-    <div class="mx-auto w-full max-w-md space-y-6">
-        <div class="rounded-lg border shadow-sm" data-v0-t="card">
+    <div class="mx-auto w-full max-w-[28rem] space-y-6">
+        <div class="rounded-lg border shadow-sm">
             <div class="flex flex-col p-6 space-y-1">
                 <h3 class="tracking-tight text-2xl font-bold">Iniciar Sesión</h3>
                 <p class="text-sm">Ingresa tus credenciales para acceder a tu cuenta</p>
@@ -124,8 +124,97 @@
             text: 'Iniciar sesión',
             width: '100%',
             type: 'default',
-            useSubmitBehavior: true
+            useSubmitBehavior: true,
+            onClick: () => {
+                const form = $('#form_login').dxForm('instance');
+                const formData = form.option('formData');
+                const validate = form.validate();
+
+                // Validar formulario
+                if (!validate.isValid) {
+                    $.notify({
+                        message: 'Revise los campos en rojo',
+                        type: 'danger'
+                    });
+                    return;
+                }
+
+                // Cambiamos el estado del botón
+                loaderButton({
+                    tag: '#submit',
+                    icon: '',
+                    disabled: true
+                });
+
+                // Enviar formulario
+                query('login', 'POST', formData).done(function(response) {
+                    if (response.status === 200) {
+                        window.location.href = '<?= base_url('home') ?>';
+                    } else {
+                        if (response.message) {
+                            $.notify({
+                                message: response.message,
+                                type: 'warning'
+                            });
+                        }
+
+                        for (const [key, value] of Object.entries(response.errors)) {
+                            $.notify({
+                                message: `${key}: ${value}`,
+                                type: 'warning'
+                            });
+                        }
+                    }
+                    // Cambiamos el estado del botón
+                    loaderButton({
+                        tag: '#submit',
+                        icon: '',
+                        disabled: false
+                    });
+                }).catch(function(error) {
+                    if (error.responseJSON.message) {
+                        $.notify({
+                            message: error.responseJSON.message,
+                            type: 'danger'
+                        });
+                    }
+                    if (error.responseJSON.errors) {
+                        for (const [key, value] of Object.entries(error.responseJSON.errors)) {
+                            $.notify({
+                                message: value,
+                                type: 'danger'
+                            });
+                        }
+                    }
+                    // Cambiamos el estado del botón
+                    loaderButton({
+                        tag: '#submit',
+                        icon: '',
+                        disabled: false
+                    });
+                });
+            }
         });
+
+        const loaderButton = ({ tag, icon = '', disabled = false }) => {
+
+            if (!tag) {
+                console.warn('El tag es requerido');
+                return;
+            }
+
+            const button = $(tag).dxButton('instance');
+            if (!button) {
+                console.error('No se encontró el botón con el selector:', tag);
+                return;
+            }
+
+            button.option({
+                disabled,
+                icon: disabled ? 'loader' : icon
+            });
+        };
+
     })
 </script>
 <?= $this->endSection() ?>

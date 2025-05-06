@@ -40,9 +40,11 @@
     --text-sm: 0.875rem;
     --text-sm--line-height: calc(1.25 / 0.875);
     --text-base: 1rem;
+    --text-base--line-height: calc(1.5 / 1);
     --text-lg: 1.125rem;
     --text-lg--line-height: calc(1.75 / 1.125);
     --text-xl: 1.25rem;
+    --text-xl--line-height: calc(1.75 / 1.25);
     --text-2xl: 1.5rem;
     --text-2xl--line-height: calc(2 / 1.5);
     --text-3xl: 1.875rem;
@@ -350,6 +352,9 @@
   .max-w-6xl {
     max-width: var(--container-6xl);
   }
+  .max-w-\[28rem\] {
+    max-width: 28rem;
+  }
   .max-w-\[300px\] {
     max-width: 300px;
   }
@@ -377,8 +382,14 @@
   .table-fixed {
     table-layout: fixed;
   }
+  .border-collapse {
+    border-collapse: collapse;
+  }
   .transform {
     transform: var(--tw-rotate-x,) var(--tw-rotate-y,) var(--tw-rotate-z,) var(--tw-skew-x,) var(--tw-skew-y,);
+  }
+  .cursor-pointer {
+    cursor: pointer;
   }
   .resize {
     resize: both;
@@ -541,6 +552,9 @@
   }
   .px-8 {
     padding-inline: calc(var(--spacing) * 8);
+  }
+  .py-1 {
+    padding-block: calc(var(--spacing) * 1);
   }
   .py-1\.5 {
     padding-block: calc(var(--spacing) * 1.5);
@@ -844,10 +858,21 @@
       padding-block: calc(var(--spacing) * 0);
     }
   }
+  .md\:text-xl {
+    @media (width >= 48rem) {
+      font-size: var(--text-xl);
+      line-height: var(--tw-leading, var(--text-xl--line-height));
+    }
+  }
   .md\:text-xl\/relaxed {
     @media (width >= 48rem) {
       font-size: var(--text-xl);
       line-height: var(--leading-relaxed);
+    }
+  }
+  .lg\:flex {
+    @media (width >= 64rem) {
+      display: flex;
     }
   }
   .lg\:grid-cols-2 {
@@ -865,10 +890,22 @@
       padding-inline: calc(var(--spacing) * 6);
     }
   }
+  .lg\:text-base {
+    @media (width >= 64rem) {
+      font-size: var(--text-base);
+      line-height: var(--tw-leading, var(--text-base--line-height));
+    }
+  }
   .lg\:text-base\/relaxed {
     @media (width >= 64rem) {
       font-size: var(--text-base);
       line-height: var(--leading-relaxed);
+    }
+  }
+  .xl\:text-xl {
+    @media (width >= 80rem) {
+      font-size: var(--text-xl);
+      line-height: var(--tw-leading, var(--text-xl--line-height));
     }
   }
   .xl\:text-xl\/relaxed {
@@ -876,6 +913,20 @@
       font-size: var(--text-xl);
       line-height: var(--leading-relaxed);
     }
+  }
+}
+.dx-icon-loader {
+  width: 14px !important;
+  height: 14px !important;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  border: 3px solid gray;
+  border-right-color: #fdda24;
+  animation: l2 1s infinite linear;
+}
+@keyframes l2 {
+  to {
+    transform: rotate(1turn);
   }
 }
 @property --tw-rotate-x {

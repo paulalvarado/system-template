@@ -29,7 +29,6 @@ class AuthController extends BaseController
         $rules = [
             'username' => 'required|max_length[255]',
             'password' => 'required|max_length[255]',
-            'password_confirm' => 'required|max_length[255]|matches[password]',
         ];
 
         if (!$this->validate($rules)) {
@@ -71,7 +70,7 @@ class AuthController extends BaseController
             ];
 
             // Si remember_me está presente y es verdadero, extendemos la expiración
-            if ($remember_me) {
+            if ($remember_me && $remember_me == true) {
                 try {
                     $cookieValue = bin2hex(random_bytes(32)); // Generar token seguro
                 } catch (\Exception $e) {

@@ -1,14 +1,14 @@
 $.notify = function (options) {
 	var settings = $.extend({
 		type: 'info',
-		title: 'Notificación',
+		title: 'Notification',
 		message: 'Lorem Ipsum is simply dummy text',
 		delay: 5000,
 		icon: '',
 		showViewMore: false,
-		textViewMore: 'Ver más',
+		textViewMore: 'View more',
 		showDismiss: true,
-		textDismiss: 'Descartar',
+		textDismiss: 'Dismiss',
 		onClick: () => { }
 	}, options);
 
@@ -80,8 +80,8 @@ $.notify = function (options) {
 			$('<p>').html(settings.message)
 		),
 		(settings.showViewMore || settings.showDismiss) && $('<div>').addClass('flex').append(
-			settings.showViewMore && $('<button>').attr('type', 'button').addClass(`text-white ${colorBg2} ${colorBg2Hover} focus:ring-4 focus:outline-none ${colorRing} font-medium rounded text-xs px-3 py-1.5 me-2 text-center inline-flex items-center`).text(settings.textViewMore).on('click', settings.onClick),
-			settings.showDismiss && $('<button>').attr('type', 'button').addClass(`${colorText} bg-transparent border ${colorBorder2} ${colorBg2Hover} hover:text-white focus:ring-4 focus:outline-none ${colorRing} font-medium rounded text-xs px-3 py-1.5 text-center`).text(settings.textDismiss).on('click', function () {
+			settings.showViewMore && $('<button>').attr('type', 'button').addClass(`cursor-pointer text-white ${colorBg2} ${colorBg2Hover} focus:ring-4 focus:outline-none ${colorRing} font-medium rounded text-xs px-3 py-1.5 me-2 text-center inline-flex items-center`).text(settings.textViewMore).on('click', settings.onClick),
+			settings.showDismiss && $('<button>').attr('type', 'button').addClass(`cursor-pointer ${colorText} bg-transparent border ${colorBorder2} ${colorBg2Hover} hover:text-white focus:ring-4 focus:outline-none ${colorRing} font-medium rounded text-xs px-3 py-1.5 text-center`).text(settings.textDismiss).on('click', function () {
 				$notify.remove();
 			})
 		),
